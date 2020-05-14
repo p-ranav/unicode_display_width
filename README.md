@@ -11,8 +11,9 @@ Cross-platform single-header library to calculate the display width of UTF-8 str
 
 int main() {
     const std::string input = u8"Ｈｅｌｌｏ, ｗｏｒｌｄ!";
+    
+    // Calculate display width
     const auto result = unicode::display_width(input);
-    // result is 23
     
     // Verify result
     std::cout << "Input  : " << input << "\n";
