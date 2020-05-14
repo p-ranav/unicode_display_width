@@ -204,4 +204,11 @@ TEST_CASE("unicode::display_width correctly returns the display width of unicode
         REQUIRE(result == 4);
         print_columns(input, result);
     }
+
+    {
+        // wstring
+        const std::wstring input = L"Μένω στους Παξούς";
+        const auto result = unicode::display_width(input);
+        REQUIRE(result == 17);
+    }
 }
