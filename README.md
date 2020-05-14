@@ -17,11 +17,7 @@ int main() {
     
     // Verify result
     std::cout << "Input  : " << input << "\n";
-    std::cout << "Output : ";
-    for(auto i = 0; i < result; ++i) {
-        std::cout << "|";
-    }
-    std::cout << "\n"; 
+    std::cout << "Output : " << std::string(result, '|') << "\n";
     std::cout << "Width  : " << result << "\n\n";
 }
 ```

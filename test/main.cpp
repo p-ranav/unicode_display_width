@@ -5,13 +5,9 @@
 using doctest::test_suite;
 
 inline void print_columns(const std::string& input, const int result) {
-    std::cout << "Input : " << input << "\n";
-    std::cout << "Output: ";
-    for(auto i = 0; i < result; ++i) {
-        std::cout << "|";
-    }
-    std::cout << "\n"; 
-    std::cout << "Result: " << result << "\n\n";
+    std::cout << "Input  : " << input << "\n";
+    std::cout << "Output : " << std::string(result, '|') << "\n";
+    std::cout << "Width  : " << result << "\n\n";
 }
 
 TEST_CASE("unicode::display_width correctly returns the display width of unicode strings" * test_suite("unicode::display_width")) {
