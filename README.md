@@ -1,5 +1,8 @@
-# utf8_width
-Displayed width of unicode strings
+<p align="center">
+  <img height="100" src="img/logo.png" alt="display_width"/>
+</p>
+
+Cross-platform single-header library to calculate the display width of UTF-8 strings
 
 ## Quick Start
 
