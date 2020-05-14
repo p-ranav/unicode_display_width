@@ -1,5 +1,5 @@
 <p align="center">
-  <img height="60" src="img/logo.png" alt="display_width"/>
+  <img height="50" src="img/logo.png" alt="display_width"/>
 </p>
 
 Cross-platform single-header library to calculate the display width of UTF-8 strings
