@@ -14,7 +14,7 @@ int main() {
     const auto result = unicode::display_width(input);
     // result is 23
     
-    // Print aligned text
+    // Verify result
     std::cout << "Input  : " << input << "\n";
     std::cout << "Output : ";
     for(auto i = 0; i < result; ++i) {
