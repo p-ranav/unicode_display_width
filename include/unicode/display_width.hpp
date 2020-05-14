@@ -325,14 +325,14 @@ int mk_wcswidth_cjk(const wchar_t* pwcs, size_t n)
 #if defined(__unix__) || defined(__unix) || defined(__APPLE__)
 // convert UTF-8 string to wstring
 std::wstring utf8_decode(const std::string& str) {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-    return myconv.from_bytes(str);
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+  return myconv.from_bytes(str);
 }
 
 // convert wstring to UTF-8 string
 std::string utf8_encode(const std::wstring& str) {
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
-    return myconv.to_bytes(str);
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+  return myconv.to_bytes(str);
 }
 #else
 // Convert a wide Unicode string to an UTF8 string
@@ -358,12 +358,12 @@ std::wstring utf8_decode(const std::string& str)
 
 }
 
-int display_width(const ::std::string& input) {
+int display_width(const std::string& input) {
   using namespace unicode::details;
   return mk_wcswidth(utf8_decode(input).c_str(), input.size());
 }
 
-int display_width(const ::std::wstring& input) {
+int display_width(const std::wstring& input) {
   return details::mk_wcswidth(input.c_str(), input.size());
 }
 
