@@ -15,13 +15,13 @@ int main() {
     // result is 23
     
     // Print aligned text
-    std::cout << "Input : " << input << "\n";
-    std::cout << "Output: ";
+    std::cout << "Input  : " << input << "\n";
+    std::cout << "Output : ";
     for(auto i = 0; i < result; ++i) {
         std::cout << "|";
     }
     std::cout << "\n"; 
-    std::cout << "Result: " << result << "\n\n";
+    std::cout << "Width  : " << result << "\n\n";
 }
 ```
 
