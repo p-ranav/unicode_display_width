@@ -1,4 +1,5 @@
-#pragma once
+#ifndef UNICODE_DISPLAY_WIDTH_H
+#define UNICODE_DISPLAY_WIDTH_H
 #include <clocale>
 #include <codecvt>
 #include <cstdlib>
@@ -187,8 +188,17 @@ inline int mk_wcwidth(wchar_t ucs)
   /* test for 8-bit control characters */
   if (ucs == 0)
     return 0;
-  if (ucs < 32 || (ucs >= 0x7f && ucs < 0xa0))
+
+  /* detect ansi escape sequence */
+  if (ucs == 0x1b)
     return -1;
+
+  /* detect zero-width-joiner (ZWJ) e.g. used to combine emojis like flags */
+  if (ucs == 0x200D)
+    return -2;
+
+  if (ucs < 32 || (ucs >= 0x7f && ucs < 0xa0))
+    return -10;
 
   /* binary search in table of non-spacing characters */
   if (bisearch(ucs, combining,
@@ -209,8 +219,12 @@ inline int mk_wcwidth(wchar_t ucs)
       (ucs >= 0xfe30 && ucs <= 0xfe6f) || /* CJK Compatibility Forms */
       (ucs >= 0xff00 && ucs <= 0xff60) || /* Fullwidth Forms */
       (ucs >= 0xffe0 && ucs <= 0xffe6) ||
-      (ucs >= 0x20000 && ucs <= 0x2fffd) ||
-      (ucs >= 0x30000 && ucs <= 0x3fffd)));
+      (ucs >= 0x20000 && ucs <= 0x2fffd) || // CJK
+      (ucs >= 0x30000 && ucs <= 0x3fffd) ||
+      // Miscellaneous Symbols and Pictographs + Emoticons:
+      (ucs >= 0x1f300 && ucs <= 0x1f64f) ||
+      // Supplemental Symbols and Pictographs:
+      (ucs >= 0x1f900 && ucs <= 0x1f9ff)));
 }
 
 
@@ -218,11 +232,36 @@ inline int mk_wcswidth(const wchar_t* pwcs, size_t n)
 {
   int w, width = 0;
 
-  for (; *pwcs && n-- > 0; pwcs++)
-    if ((w = mk_wcwidth(*pwcs)) < 0)
-      return -1;
-    else
-      width += w;
+  int last_code_point_width = 0;
+  bool in_escape_sequence = false;
+  for (; *pwcs && n-- > 0; pwcs++) {
+    if ((w = mk_wcwidth(*pwcs)) < 0) {
+      switch (w) {
+      case -1: // detected ansi escape sequence
+        in_escape_sequence = true;
+        last_code_point_width = 0;
+        continue;
+      case -2: // detected zero-width-joiner
+        if (last_code_point_width >= 0) {
+          width -= last_code_point_width;
+        } else {
+          last_code_point_width = 0;
+        }
+        continue;
+      default:
+        return -1;
+      }
+    } else {
+      if (in_escape_sequence) {
+        if (std::iswalpha(*pwcs)) { // N.B. usually an 'm'
+          in_escape_sequence = false;
+        }
+      } else {
+        width += w;
+        last_code_point_width = w;
+      }
+    }
+  }
 
   return width;
 }
@@ -334,7 +373,7 @@ inline std::string utf8_encode(const std::wstring& str) {
 
 inline int display_width(const std::string& input) {
   using namespace unicode::details;
-  return mk_wcswidth(utf8_decode(input).c_str(), input.size());
+  return details::mk_wcswidth(utf8_decode(input).c_str(), input.size());
 }
 
 inline int display_width(const std::wstring& input) {
@@ -342,3 +381,4 @@ inline int display_width(const std::wstring& input) {
 }
 
 }
+#endif // UNICODE_DISPLAY_WIDTH_H
