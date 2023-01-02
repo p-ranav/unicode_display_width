@@ -138,7 +138,33 @@ TEST_CASE("unicode::display_width correctly returns the display width of unicode
     }
 
     {
-        // Woman scientist emoji
+        // smiley emoji
+        const std::string input  = u8"😁";
+        const auto result = unicode::display_width(input);
+        REQUIRE(result == 2);
+        print_columns(input, result);
+    }
+
+    {
+        // zero-width-joiner ZWJ
+        const std::string input = u8"‍";
+        const auto result = unicode::display_width(input);
+        REQUIRE(result == 0);
+        print_columns(input, result);
+    }
+
+    {
+        // Woman scientist emoji - explicit version
+        // i.e. Woman emoji + zero-width-joiner (‍) + microscope emoji
+        const std::string input = u8"👩\u200D🔬";
+        REQUIRE(input == u8"👩‍🔬");
+        const auto result = unicode::display_width(input);
+        REQUIRE(result == 2);
+        print_columns(input, result);
+    }
+
+    {
+        // Woman scientist emoji - implicit version
         const std::string input = u8"👩‍🔬";
         const auto result = unicode::display_width(input);
         REQUIRE(result == 2);
