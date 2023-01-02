@@ -188,12 +188,17 @@ inline int mk_wcwidth(wchar_t ucs)
   /* test for 8-bit control characters */
   if (ucs == 0)
     return 0;
-  if (ucs < 32 || (ucs >= 0x7f && ucs < 0xa0))
+
+  /* detect ansi escape sequence */
+  if (ucs == 0x1b)
     return -1;
 
   /* detect zero-width-joiner (ZWJ) e.g. used to combine emojis like flags */
   if (ucs == 0x200D)
     return -2;
+
+  if (ucs < 32 || (ucs >= 0x7f && ucs < 0xa0))
+    return -10;
 
   /* binary search in table of non-spacing characters */
   if (bisearch(ucs, combining,
@@ -228,20 +233,33 @@ inline int mk_wcswidth(const wchar_t* pwcs, size_t n)
   int w, width = 0;
 
   int last_code_point_width = 0;
+  bool in_escape_sequence = false;
   for (; *pwcs && n-- > 0; pwcs++) {
     if ((w = mk_wcwidth(*pwcs)) < 0) {
-      if (w == -1) {
+      switch (w) {
+      case -1: // detected ansi escape sequence
+        in_escape_sequence = true;
+        last_code_point_width = 0;
+        continue;
+      case -2: // detected zero-width-joiner
+        if (last_code_point_width >= 0) {
+          width -= last_code_point_width;
+        } else {
+          last_code_point_width = 0;
+        }
+        continue;
+      default:
         return -1;
       }
-      // detected zero-width-joiner
-      if (last_code_point_width >= 0) {
-        width -= last_code_point_width;
-      } else {
-        last_code_point_width = 0;
-      }
     } else {
-      width += w;
-      last_code_point_width = w;
+      if (in_escape_sequence) {
+        if (std::iswalpha(*pwcs)) { // N.B. usually an 'm'
+          in_escape_sequence = false;
+        }
+      } else {
+        width += w;
+        last_code_point_width = w;
+      }
     }
   }
 

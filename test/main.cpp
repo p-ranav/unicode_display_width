@@ -233,4 +233,12 @@ TEST_CASE("unicode::display_width correctly returns the display width of unicode
         const auto result = unicode::display_width(input);
         REQUIRE(result == 17);
     }
+
+    {
+        // ANSI escape characters wrapping a red and (blinking) green 'XX'
+        const std::string input = "\x1b[31mX\x1b[23;32mX\x1b[0m";
+        const auto result = unicode::display_width(input);
+        REQUIRE(result == 2);
+        print_columns(input, result);
+    }
 }
