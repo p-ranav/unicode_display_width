@@ -1,4 +1,5 @@
-#pragma once
+#ifndef UNICODE_DISPLAY_WIDTH_H
+#define UNICODE_DISPLAY_WIDTH_H
 #include <clocale>
 #include <codecvt>
 #include <cstdlib>
@@ -342,3 +343,4 @@ inline int display_width(const std::wstring& input) {
 }
 
 }
+#endif // UNICODE_DISPLAY_WIDTH_H
